@@ -4,7 +4,7 @@ import { skills } from '../data/portfolioData';
 
 const Skills = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: false, margin: '-50px' });
   const [activeCategory, setActiveCategory] = useState('All');
   const [showAll, setShowAll] = useState(false);
 
@@ -15,24 +15,7 @@ const Skills = () => {
       ? skills
       : skills.filter((skill) => skill.category === activeCategory);
 
-  const displayedSkills = showAll ? filteredSkills : filteredSkills.slice(0, 5);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: 'easeOut' },
-    },
-  };
+  const displayedSkills = showAll ? filteredSkills : filteredSkills.slice(0, 6);
 
   return (
     <section
@@ -92,67 +75,40 @@ const Skills = () => {
           ))}
         </motion.div>
 
-        {/* Skills Grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
+        {/* Vertical Timeline Skills */}
+        <div className="relative max-w-4xl mx-auto">
+          {/* Vertical Line */}
+          <motion.div
+            className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-purple-500 rounded-full"
+            initial={{ scaleY: 0 }}
+            animate={isInView ? { scaleY: 1 } : { scaleY: 0 }}
+            transition={{ duration: 1.5, ease: 'easeOut' }}
+            style={{ transformOrigin: 'top' }}
+          />
+
           <AnimatePresence mode="popLayout">
-            {displayedSkills.map((skill, index) => (
-              <motion.div
-                key={skill.name}
-                layout
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="group p-6 rounded-2xl border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
-                style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}
-              >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold group-hover:text-purple-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
-                  {skill.name}
-                </h3>
-                <span className="text-sm text-purple-400 font-medium">
-                  {skill.level}%
-                </span>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="relative h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border-color)' }}>
-                <motion.div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={isInView ? { width: `${skill.level}%` } : { width: 0 }}
-                  transition={{ duration: 1, delay: 0.5 + index * 0.1, ease: 'easeOut' }}
+            {displayedSkills.map((skill, index) => {
+              const isLeft = index % 2 === 0;
+              return (
+                <SkillItem
+                  key={skill.name}
+                  skill={skill}
+                  index={index}
+                  isLeft={isLeft}
+                  isInView={isInView}
                 />
-                
-                {/* Shine Effect */}
-                <motion.div
-                  className="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                  initial={{ x: '-100%' }}
-                  animate={isInView ? { x: '200%' } : { x: '-100%' }}
-                  transition={{ duration: 1.5, delay: 1 + index * 0.1 }}
-                />
-              </div>
-
-              <div className="mt-3">
-                <span className="text-xs uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                  {skill.category}
-                </span>
-              </div>
-            </motion.div>
-          ))}
+              );
+            })}
           </AnimatePresence>
-        </motion.div>
+        </div>
 
         {/* Show More / Show Less Button */}
-        {filteredSkills.length > 5 && (
+        {filteredSkills.length > 6 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex justify-center mt-8"
+            className="flex justify-center mt-12"
           >
             <motion.button
               onClick={() => setShowAll(!showAll)}
@@ -160,38 +116,83 @@ const Skills = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {showAll ? 'Show Less' : `Show More (${filteredSkills.length - 5} more)`}
+              {showAll ? 'Show Less' : `Show More (${filteredSkills.length - 6} more)`}
             </motion.button>
           </motion.div>
         )}
-
-        {/* Decorative Tech Icons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="mt-16 flex justify-center items-center gap-8 flex-wrap"
-        >
-          {['⚛️', '📦', '🔥', '🎨', '⚡', '🔧'].map((emoji, index) => (
-            <motion.span
-              key={index}
-              className="text-4xl opacity-50 hover:opacity-100 transition-opacity cursor-default"
-              animate={{
-                y: [0, -10, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: index * 0.2,
-                ease: 'easeInOut',
-              }}
-            >
-              {emoji}
-            </motion.span>
-          ))}
-        </motion.div>
       </div>
     </section>
+  );
+};
+
+// Individual Skill Item Component
+const SkillItem = ({ skill, index, isLeft, isInView }) => {
+  const itemRef = useRef(null);
+  const itemInView = useInView(itemRef, { once: false, margin: '-50px' });
+
+  return (
+    <motion.div
+      ref={itemRef}
+      className={`relative flex items-center mb-8 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+      initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
+      animate={itemInView ? { opacity: 1, x: 0 } : { opacity: 0, x: isLeft ? -50 : 50 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+    >
+      {/* Timeline Dot */}
+      <motion.div
+        className="absolute left-4 md:left-1/2 w-4 h-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full border-4 z-10 transform -translate-x-1/2"
+        style={{ borderColor: 'var(--bg-primary)' }}
+        initial={{ scale: 0 }}
+        animate={itemInView ? { scale: 1 } : { scale: 0 }}
+        transition={{ duration: 0.3, delay: index * 0.1 + 0.2 }}
+      />
+
+      {/* Horizontal Line */}
+      <motion.div
+        className={`hidden md:block absolute top-1/2 h-0.5 w-8 bg-gradient-to-r from-purple-500 to-pink-500 ${
+          isLeft ? 'right-1/2 mr-2' : 'left-1/2 ml-2'
+        }`}
+        initial={{ scaleX: 0 }}
+        animate={itemInView ? { scaleX: 1 } : { scaleX: 0 }}
+        transition={{ duration: 0.3, delay: index * 0.1 + 0.3 }}
+        style={{ transformOrigin: isLeft ? 'right' : 'left' }}
+      />
+
+      {/* Skill Card */}
+      <motion.div
+        className={`ml-12 md:ml-0 md:w-[calc(50%-2rem)] ${isLeft ? 'md:mr-auto md:pr-8' : 'md:ml-auto md:pl-8'}`}
+        whileHover={{ scale: 1.02 }}
+      >
+        <div
+          className="p-5 rounded-2xl border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+              {skill.name}
+            </h3>
+            <span className="text-sm text-purple-400 font-bold">
+              {skill.level}%
+            </span>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="relative h-2 rounded-full overflow-hidden mb-2" style={{ backgroundColor: 'var(--border-color)' }}>
+            <motion.div
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+              initial={{ width: 0 }}
+              animate={itemInView ? { width: `${skill.level}%` } : { width: 0 }}
+              transition={{ duration: 0.8, delay: index * 0.1 + 0.4, ease: 'easeOut' }}
+            />
+          </div>
+
+          <span className="text-xs uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+            {skill.category}
+          </span>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

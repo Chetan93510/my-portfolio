@@ -8,7 +8,9 @@ const Projects = () => {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [showAll, setShowAll] = useState(false);
 
-  const displayedProjects = showAll ? projects : projects.filter((p) => p.featured);
+  // Show minimum 3 projects (featured), or all if showAll is true
+  const featuredProjects = projects.filter((p) => p.featured);
+  const displayedProjects = showAll ? projects : featuredProjects.length >= 3 ? featuredProjects : projects.slice(0, 3);
 
   const containerVariants = {
     hidden: { opacity: 0 },
