@@ -1,9 +1,4 @@
 {
   "version": 2,
-  "framework": "vite",
-  "functions": {
-    "api/*.js": {
-      "runtime": "@vercel/node@3"
-    }
-  }
+  "framework": "vite"
 }
