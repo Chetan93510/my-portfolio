@@ -112,6 +112,8 @@ const Hero = () => {
           <motion.a
             href="/CV_Chetan_Malav.pdf"
             download="CV_Chetan_Malav.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="group px-8 py-4 border-2 border-purple-500/50 rounded-full font-semibold hover:bg-purple-500/10 transition-all duration-300 flex items-center gap-2"
             style={{ color: 'var(--text-primary)' }}
             whileHover={{ scale: 1.05 }}
